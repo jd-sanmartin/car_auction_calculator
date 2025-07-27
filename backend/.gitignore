@@ -1,0 +1,17 @@
+# .NET build results
+bin/
+obj/
+
+# Logs
+*.log
+
+# Publish output
+publish/
+
+# Local NuGet packages
+*.nupkg
+
+# Backup & temp files
+*~
+*.tmp
+*.bak
