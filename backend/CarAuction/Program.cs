@@ -1,3 +1,4 @@
+using CarAuction.Middleware;
 using CarAuction.Services;
 using CarAuction.Services.Interfaces;
 
@@ -44,6 +45,8 @@ public class Program
 
 
         app.MapControllers();
+
+        app.UseMiddleware<ExceptionHandlerMiddleware>();
 
         app.Run();
     }
