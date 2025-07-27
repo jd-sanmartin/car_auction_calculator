@@ -9,8 +9,8 @@
         <label for="basePrice">Base Price *</label>
         <input id="basePrice" :value="formData.basePrice"
           @input="updateField('basePrice', Number(($event.target as HTMLInputElement).value))" type="number" min="1"
-          :class="{ error: errors.basePrice }" required />
-        <span v-if="errors.basePrice" class="error-message">{{ errors.basePrice[0] }}</span>
+          :class="{ error: errors?.basePrice }" required />
+        <span v-if="errors?.basePrice" class="error-message">{{ errors.basePrice[0] }}</span>
       </div>
 
       <!-- Car Type -->
@@ -18,12 +18,12 @@
         <label for="carType">Car Type *</label>
         <select id="carType" :value="formData.carType"
           @change="updateField('carType', ($event.target as HTMLSelectElement).value)"
-          :class="{ error: errors.carType }" required>
+          :class="{ error: errors?.carType }" required>
           <!-- TODO: Ideally, we would get these values from the backend -->
           <option value="Common">Common</option>
           <option value="Luxury">Luxury</option>
         </select>
-        <span v-if="errors.carType" class="error-message">{{ errors.carType[0] }}</span>
+        <span v-if="errors?.carType" class="error-message">{{ errors.carType[0] }}</span>
       </div>
 
       <!-- Submit Button -->
@@ -45,7 +45,7 @@ import type { BidFormData, FormErrors } from '../../types/bids';
 interface Props {
   formData: BidFormData;
   isSubmitting: boolean;
-  errors: FormErrors;
+  errors?: Partial<FormErrors>;
   errorMessage: string;
 }
 
