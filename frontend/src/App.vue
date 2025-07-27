@@ -31,7 +31,7 @@ const formData = reactive<BidFormData>({
 });
 
 const isSubmitting = ref(false);
-const errors = ref<FormErrors>({});
+const errors = ref<Partial<FormErrors>>({});
 const errorMessage = ref('');
 const calculationResults = ref<BidFormResponse | null>(null);
 
@@ -46,7 +46,7 @@ const updateFormData = (field: keyof BidFormData, value: string | number) => {
 };
 
 const validateForm = (): boolean => {
-  const newErrors: FormErrors = {};
+  const newErrors: Partial<FormErrors> = {};
 
   if (!formData.basePrice || isNaN(formData.basePrice) || formData.basePrice < 1) {
     newErrors.basePrice = ['Base price is required and must be at least $1'];
@@ -82,7 +82,7 @@ const handleSubmit = async (): Promise<void> => {
         basePrice: error.BasePrice || [],
         carType: error.CarType || [],
       };
-      errorMessage.value = 'invalid form data, please check the errors above';
+      errorMessage.value = 'Invalid form data, please check the errors above';
     } else {
       errorMessage.value = 'An unexpected error occurred. Please try again later.';
     }

@@ -130,7 +130,7 @@ $border-radius: 6px;
   width: 100%;
 
   &:hover:not(:disabled) {
-    background-color: color.adjust($button-color, $lightness: -10%);
+    background-color: darken($button-color, 10%);
   }
 }
 </style>
