@@ -3,7 +3,7 @@ import { mount } from "@vue/test-utils";
 import { nextTick } from "vue";
 import App from "./App.vue";
 import { bidService } from "./services/bidService";
-import type { BidFormResponse, FormErrorsFromServer } from "./types/bids";
+import type { BidFormResponse, FormErrors } from "./types/bids";
 
 // Mock the bidService
 vi.mock("./services/bidService", () => ({
@@ -272,7 +272,7 @@ describe("App.vue", () => {
 
     describe("Error Handling", () => {
       it("handles server validation errors", async () => {
-        const serverErrors: FormErrorsFromServer = {
+        const serverErrors: FormErrors = {
           basePrice: ["Server validation error for base price"],
           carType: ["Server validation error for car type"],
         };

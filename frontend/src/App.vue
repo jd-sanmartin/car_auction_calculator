@@ -78,7 +78,6 @@ const handleSubmit = async (): Promise<void> => {
     calculationResults.value = response;
   } catch (error: any) {
     if (isFormError(error)) {
-      console.log(error)
       errors.value = {
         basePrice: error.basePrice,
         carType: error.carType,
