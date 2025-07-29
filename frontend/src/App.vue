@@ -22,7 +22,7 @@ import { reactive, ref } from 'vue';
 import BidCalculationResult from './components/Bids/BidCalculationResult.vue';
 import BidCalculatorForm from './components/Bids/BidCalculatorForm.vue';
 
-import { type BidFormData, type FormErrors, type BidFormResponse, isFormErrorsFromServer } from './types/bids';
+import { type BidFormData, type FormErrors, type BidFormResponse, isFormError } from './types/bids';
 import { bidService } from './services/bidService';
 
 const formData = reactive<BidFormData>({
@@ -77,10 +77,11 @@ const handleSubmit = async (): Promise<void> => {
 
     calculationResults.value = response;
   } catch (error: any) {
-    if (isFormErrorsFromServer(error)) {
+    if (isFormError(error)) {
+      console.log(error)
       errors.value = {
-        basePrice: error.BasePrice || [],
-        carType: error.CarType || [],
+        basePrice: error.basePrice,
+        carType: error.carType,
       };
       errorMessage.value = 'Invalid form data, please check the errors above';
     } else {

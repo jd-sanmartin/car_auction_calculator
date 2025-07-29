@@ -273,8 +273,8 @@ describe("App.vue", () => {
     describe("Error Handling", () => {
       it("handles server validation errors", async () => {
         const serverErrors: FormErrorsFromServer = {
-          BasePrice: ["Server validation error for base price"],
-          CarType: ["Server validation error for car type"],
+          basePrice: ["Server validation error for base price"],
+          carType: ["Server validation error for car type"],
         };
 
         mockBidService.calculate.mockRejectedValue(serverErrors);

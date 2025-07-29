@@ -2,7 +2,7 @@ import axios, { AxiosError } from "axios";
 import type {
   BidFormData,
   BidFormResponse,
-  FormErrorsFromServer,
+  FormErrors,
 } from "../types/bids";
 
 class BidService {
@@ -24,22 +24,17 @@ class BidService {
    */
   async calculate(formData: BidFormData) {
     try {
-      const response = await this.axiosInstance.post<BidFormResponse>(
-        "/calculate",
-        formData
-      );
+      const response = await this.axiosInstance.post<BidFormResponse>("/calculate", formData);
       return response.data;
     } catch (error) {
       // This would only be used in development environments
       console.error("Error calculating bid:", error);
 
       // I think errors and responses could have a more complex structure, however I will keep it simple
+      // Also, I think we could add a middleware to handle validation errors
       if (error instanceof AxiosError) {
-        if (
-          error.response?.status === 400 &&
-          error.code === "ERR_BAD_REQUEST"
-        ) {
-          if (error.response.data?.errors)  throw error.response.data.errors as FormErrorsFromServer;
+        if (error.response?.status === 400 && error.code === "ERR_BAD_REQUEST") {
+          if (error.response.data?.errors) throw error.response.data.errors as FormErrors;
         }
       }
     }
