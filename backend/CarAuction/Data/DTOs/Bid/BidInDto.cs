@@ -13,6 +13,6 @@ namespace CarAuction.Data.Dtos.Bid
     /// </summary>
     [Required(ErrorMessage = "CarType is required.")]
     [RegularExpression("^(Common|Luxury)$", ErrorMessage = "CarType must be either 'Common' or 'Luxury'.")]
-    public string CarType { get; set; } = "Common";
+    public required string CarType { get; set; }
   }
 }

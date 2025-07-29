@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarAuction", "CarAuction\CarAuction.csproj", "{C988EBD9-3FAF-4A2D-A4C2-57F24B08A54A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarAuction.IntegrationTests", "CarAuction.IntegrationTests\CarAuction.IntegrationTests.csproj", "{AB0023B5-4313-475C-BA05-9F488043A6E7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{C988EBD9-3FAF-4A2D-A4C2-57F24B08A54A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C988EBD9-3FAF-4A2D-A4C2-57F24B08A54A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C988EBD9-3FAF-4A2D-A4C2-57F24B08A54A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB0023B5-4313-475C-BA05-9F488043A6E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB0023B5-4313-475C-BA05-9F488043A6E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB0023B5-4313-475C-BA05-9F488043A6E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB0023B5-4313-475C-BA05-9F488043A6E7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
