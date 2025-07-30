@@ -42,7 +42,7 @@ namespace CarAuction.UnitTests.Controllers
         [InlineData(1100, "Common", 50, 22, 15, 100)]
         [InlineData(1000000, "Luxury", 200, 40000, 20, 100)]
         public void CalculateBid_ValidInput_ReturnsOkResult_WithDifferentInputs(
-            double basePrice, string carType, double basicBuyerFee, double sellerSpecialFee, double associationFee, double storageFee)
+            decimal basePrice, string carType, decimal basicBuyerFee, decimal sellerSpecialFee, decimal associationFee, decimal storageFee)
         {
             // Arrange
             var bidIn = new BidInDto { BasePrice = basePrice, CarType = carType };

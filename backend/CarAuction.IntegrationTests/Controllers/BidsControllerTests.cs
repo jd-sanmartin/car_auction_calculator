@@ -32,9 +32,9 @@ namespace CarAuction.IntegrationTests.Controllers
         [InlineData(1100, "Common", 50, 22, 15, 100, 1287)]
         [InlineData(1000000, "Luxury", 200, 40000, 20, 100, 1040320)]
         public async Task CalculateBid_DifferentInputs_ReturnsExpectedFees(
-            double basePrice, string carType,
-            double expectedBuyerFee, double expectedSellerFee,
-            double expectedAssociationFee, double expectedStorageFee, double expectedTotalCost)
+            decimal basePrice, string carType,
+            decimal expectedBuyerFee, decimal expectedSellerFee,
+            decimal expectedAssociationFee, decimal expectedStorageFee, decimal expectedTotalCost)
         {
             // Arrange
             var bidInDto = new BidInDto
@@ -96,7 +96,7 @@ namespace CarAuction.IntegrationTests.Controllers
             // Arrange
             var bidInDto = new BidInDto
             {
-                BasePrice = -100.0,
+                BasePrice = -100.0m,
                 CarType = "Common"
             };
 
@@ -116,7 +116,7 @@ namespace CarAuction.IntegrationTests.Controllers
             // Arrange
             var bidInDto = new BidInDto
             {
-                BasePrice = 0.0,
+                BasePrice = 0.0m,
                 CarType = "Common"
             };
 
@@ -177,7 +177,7 @@ namespace CarAuction.IntegrationTests.Controllers
             // Arrange
             var bidInDto = new BidInDto
             {
-                BasePrice = double.MaxValue + 1.0,
+                BasePrice = decimal.MaxValue,
                 CarType = "Luxury"
             };
 

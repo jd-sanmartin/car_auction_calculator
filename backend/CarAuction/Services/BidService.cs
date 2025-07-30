@@ -7,16 +7,16 @@ namespace CarAuction.Services
 	{
 		public BidOutDto CalculateCost(BidInDto bidInDto)
 		{
-			double basePrice = bidInDto.BasePrice;
+			decimal basePrice = bidInDto.BasePrice;
 
 			// TODO: Avoid using magic numbers and use constants instead in order to avoid calculating these values every time
-			double basicBuyerFeeMinValue = bidInDto.CarType == "Common" ? 10 : 25;
-			double basicBuyerFeeMaxValue = bidInDto.CarType == "Common" ? 50 : 200;
-			double basicBuyerFee = Math.Clamp(basePrice * 0.1, basicBuyerFeeMinValue, basicBuyerFeeMaxValue);
+			decimal basicBuyerFeeMinValue = bidInDto.CarType == "Common" ? 10 : 25;
+			decimal basicBuyerFeeMaxValue = bidInDto.CarType == "Common" ? 50 : 200;
+			decimal basicBuyerFee = Math.Clamp(basePrice * 0.1m, basicBuyerFeeMinValue, basicBuyerFeeMaxValue);
 
-			double sellerSpecialFee = basePrice * (bidInDto.CarType == "Common" ? 0.02 : 0.04);
+			decimal sellerSpecialFee = basePrice * (bidInDto.CarType == "Common" ? 0.02m : 0.04m);
 
-			double associationFee = basePrice switch
+			decimal associationFee = basePrice switch
 			{
 				>= 1 and <= 500 => 5,
 				> 500 and <= 1000 => 10,
@@ -24,7 +24,7 @@ namespace CarAuction.Services
 				> 3000 => 20,
 				_ => 5 // TODO: What should the default value be?
 			};
-			double storageFee = 100;
+			decimal storageFee = 100;
 
 			return new BidOutDto
 			{

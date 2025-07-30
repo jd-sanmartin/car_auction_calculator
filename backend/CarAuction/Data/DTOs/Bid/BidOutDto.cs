@@ -2,11 +2,11 @@ namespace CarAuction.Data.Dtos.Bid
 {
 	public class BidOutDto
 	{
-		public double BasePrice { get; set; }
-		public double BasicBuyerFee { get; set; }
-		public double SellerSpecialFee { get; set; }
-		public double AssociationFee { get; set; }
-		public double StorageFee { get; set; }
-		public double TotalCost => BasePrice + BasicBuyerFee + SellerSpecialFee + AssociationFee + StorageFee;
+		public decimal BasePrice { get; set; }
+		public decimal BasicBuyerFee { get; set; }
+		public decimal SellerSpecialFee { get; set; }
+		public decimal AssociationFee { get; set; }
+		public decimal StorageFee { get; set; }
+		public decimal TotalCost => BasePrice + BasicBuyerFee + SellerSpecialFee + AssociationFee + StorageFee;
   }
 }

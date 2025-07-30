@@ -21,9 +21,9 @@ namespace CarAuction.UnitTests.Services
         [InlineData(1100, "Common", 50, 22, 15, 100, 1287)]
         [InlineData(1000000, "Luxury", 200, 40000, 20, 100, 1040320)]
         public void CalculateCost_ReturnsExpectedFees(
-            double basePrice, string carType,
-            double expectedBuyerFee, double expectedSellerFee,
-            double expectedAssociationFee, double expectedStorageFee, double expectedTotalCost)
+            decimal basePrice, string carType,
+            decimal expectedBuyerFee, decimal expectedSellerFee,
+            decimal expectedAssociationFee, decimal expectedStorageFee, decimal expectedTotalCost)
         {
             // Arrange
             var bidInDto = new BidInDto
