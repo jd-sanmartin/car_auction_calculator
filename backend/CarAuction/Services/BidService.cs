@@ -1,4 +1,5 @@
 using CarAuction.Data.Dtos.Bid;
+using CarAuction.Data.Enums;
 using CarAuction.Services.Interfaces;
 
 namespace CarAuction.Services
@@ -10,11 +11,12 @@ namespace CarAuction.Services
 			decimal basePrice = bidInDto.BasePrice;
 
 			// TODO: Avoid using magic numbers and use constants instead in order to avoid calculating these values every time
-			decimal basicBuyerFeeMinValue = bidInDto.CarType == "Common" ? 10 : 25;
-			decimal basicBuyerFeeMaxValue = bidInDto.CarType == "Common" ? 50 : 200;
+			// TODO: A Factory or Strategy could be used here to handle different car types
+			decimal basicBuyerFeeMinValue = bidInDto.CarType == CarType.Common ? 10 : 25;
+			decimal basicBuyerFeeMaxValue = bidInDto.CarType == CarType.Common ? 50 : 200;
 			decimal basicBuyerFee = Math.Clamp(basePrice * 0.1m, basicBuyerFeeMinValue, basicBuyerFeeMaxValue);
 
-			decimal sellerSpecialFee = basePrice * (bidInDto.CarType == "Common" ? 0.02m : 0.04m);
+			decimal sellerSpecialFee = basePrice * (bidInDto.CarType == CarType.Common ? 0.02m : 0.04m);
 
 			decimal associationFee = basePrice switch
 			{

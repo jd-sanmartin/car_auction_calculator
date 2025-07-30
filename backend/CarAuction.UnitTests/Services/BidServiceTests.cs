@@ -1,5 +1,6 @@
 using CarAuction.Services;
 using CarAuction.Data.Dtos.Bid;
+using CarAuction.Data.Enums;
 
 namespace CarAuction.UnitTests.Services
 {
@@ -14,14 +15,14 @@ namespace CarAuction.UnitTests.Services
 
         [Theory]
         // basePrice, carType, basicBuyerFee, sellerSpecialFee, associationFee, storageFee, totalCost
-        [InlineData(398, "Common", 39.80, 7.96, 5, 100, 550.76)]
-        [InlineData(501, "Common", 50, 10.02, 10, 100, 671.02)]
-        [InlineData(57, "Common", 10, 1.14, 5, 100, 173.14)]
-        [InlineData(1800, "Luxury", 180, 72, 15, 100, 2167)]
-        [InlineData(1100, "Common", 50, 22, 15, 100, 1287)]
-        [InlineData(1000000, "Luxury", 200, 40000, 20, 100, 1040320)]
+        [InlineData(398, CarType.Common, 39.80, 7.96, 5, 100, 550.76)]
+        [InlineData(501, CarType.Common, 50, 10.02, 10, 100, 671.02)]
+        [InlineData(57, CarType.Common, 10, 1.14, 5, 100, 173.14)]
+        [InlineData(1800, CarType.Luxury, 180, 72, 15, 100, 2167)]
+        [InlineData(1100, CarType.Common, 50, 22, 15, 100, 1287)]
+        [InlineData(1000000, CarType.Luxury, 200, 40000, 20, 100, 1040320)]
         public void CalculateCost_ReturnsExpectedFees(
-            decimal basePrice, string carType,
+            decimal basePrice, CarType carType,
             decimal expectedBuyerFee, decimal expectedSellerFee,
             decimal expectedAssociationFee, decimal expectedStorageFee, decimal expectedTotalCost)
         {

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using CarAuction.Data.Enums;
 
 namespace CarAuction.Data.Dtos.Bid
 {
@@ -8,11 +9,8 @@ namespace CarAuction.Data.Dtos.Bid
     [Range(typeof(decimal), "1", "999999999.99", ErrorMessage = "BasePrice must be greater than zero.")]
     public decimal BasePrice { get; set; }
 
-    /// <summary>
-    /// Car type. Allowed values: "Common", "Luxury".
-    /// </summary>
     [Required(ErrorMessage = "CarType is required.")]
-    [RegularExpression("^(Common|Luxury)$", ErrorMessage = "CarType must be either 'Common' or 'Luxury'.")]
-    public required string CarType { get; set; }
+    [EnumDataType(typeof(CarType), ErrorMessage = "CarType must be valid")]
+    public required CarType CarType { get; set; }
   }
 }

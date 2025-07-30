@@ -3,6 +3,7 @@ using System.Net;
 using System.Text;
 using System.Text.Json;
 using CarAuction.Data.Dtos.Bid;
+using CarAuction.Data.Enums;
 
 namespace CarAuction.IntegrationTests.Controllers
 {
@@ -25,14 +26,14 @@ namespace CarAuction.IntegrationTests.Controllers
 
         [Theory]
         // basePrice, carType, basicBuyerFee, sellerSpecialFee, associationFee, storageFee, totalCost
-        [InlineData(398, "Common", 39.80, 7.96, 5, 100, 550.76)]
-        [InlineData(501, "Common", 50, 10.02, 10, 100, 671.02)]
-        [InlineData(57, "Common", 10, 1.14, 5, 100, 173.14)]
-        [InlineData(1800, "Luxury", 180, 72, 15, 100, 2167)]
-        [InlineData(1100, "Common", 50, 22, 15, 100, 1287)]
-        [InlineData(1000000, "Luxury", 200, 40000, 20, 100, 1040320)]
+        [InlineData(398, CarType.Common, 39.80, 7.96, 5, 100, 550.76)]
+        [InlineData(501, CarType.Common, 50, 10.02, 10, 100, 671.02)]
+        [InlineData(57, CarType.Common, 10, 1.14, 5, 100, 173.14)]
+        [InlineData(1800, CarType.Luxury, 180, 72, 15, 100, 2167)]
+        [InlineData(1100, CarType.Common, 50, 22, 15, 100, 1287)]
+        [InlineData(1000000, CarType.Luxury, 200, 40000, 20, 100, 1040320)]
         public async Task CalculateBid_DifferentInputs_ReturnsExpectedFees(
-            decimal basePrice, string carType,
+            decimal basePrice, CarType carType,
             decimal expectedBuyerFee, decimal expectedSellerFee,
             decimal expectedAssociationFee, decimal expectedStorageFee, decimal expectedTotalCost)
         {
@@ -80,7 +81,7 @@ namespace CarAuction.IntegrationTests.Controllers
         public async Task CalculateBid_MissingBasePrice_ReturnsBadRequest()
         {
             // Arrange
-            var invalidJson = @"{""carType"": ""Common""}";
+            var invalidJson = @"{""carType"": ""CarType.Common""}";
             var content = new StringContent(invalidJson, Encoding.UTF8, "application/json");
 
             // Act
@@ -97,7 +98,7 @@ namespace CarAuction.IntegrationTests.Controllers
             var bidInDto = new BidInDto
             {
                 BasePrice = -100.0m,
-                CarType = "Common"
+                CarType = CarType.Common
             };
 
             var json = JsonSerializer.Serialize(bidInDto, _jsonOptions);
@@ -117,7 +118,7 @@ namespace CarAuction.IntegrationTests.Controllers
             var bidInDto = new BidInDto
             {
                 BasePrice = 0.0m,
-                CarType = "Common"
+                CarType = CarType.Common
             };
 
             var json = JsonSerializer.Serialize(bidInDto, _jsonOptions);
@@ -161,7 +162,7 @@ namespace CarAuction.IntegrationTests.Controllers
         public async Task CalculateBid_InvalidJson_ReturnsBadRequest()
         {
             // Arrange
-            var invalidJson = @"{""basePrice"": ""invalid"", ""carType"": ""Common""}";
+            var invalidJson = @"{""basePrice"": ""invalid"", ""carType"": ""CarType.Common""}";
             var content = new StringContent(invalidJson, Encoding.UTF8, "application/json");
 
             // Act
@@ -178,7 +179,7 @@ namespace CarAuction.IntegrationTests.Controllers
             var bidInDto = new BidInDto
             {
                 BasePrice = decimal.MaxValue,
-                CarType = "Luxury"
+                CarType = CarType.Luxury
             };
 
             var json = JsonSerializer.Serialize(bidInDto, _jsonOptions);
