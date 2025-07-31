@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
 import { nextTick } from "vue";
-import App from "./App.vue";
+import BidCalculator from "./BidCalculator.vue";
 import { bidService } from "./services/bidService";
 import { CarTypeEnum, type BidFormResponse, type FormErrors } from "./types/bids";
 
 // This function is used when we need to wait for the onMounted hook
 const mountAppAndWait = async () => {
-  const wrapper = mount(App);
+  const wrapper = mount(BidCalculator);
   await flushPromises();
   return wrapper;
 };
@@ -24,7 +24,7 @@ vi.mock("./services/bidService", () => ({
   },
 }));
 
-// Mock child components to focus on App logic
+// Mock child components to focus on BidCalculator logic
 vi.mock("./components/Bids/BidCalculatorForm.vue", () => ({
   default: {
     name: "BidCalculatorForm",
@@ -59,7 +59,7 @@ vi.mock("./components/Bids/BidCalculationResult.vue", () => ({
   },
 }));
 
-describe("App.vue", () => {
+describe("BidCalculator.vue", () => {
   const mockBidService = vi.mocked(bidService);
 
   beforeEach(() => {
@@ -83,8 +83,19 @@ describe("App.vue", () => {
     ]);
   });
 
+  it("shows error message when car types are not available", async () => {
+    mockBidService.getCarTypes.mockRejectedValue(new Error("Failed to load car types."));
+
+    const wrapper = await mountAppAndWait();
+  
+    expect(wrapper.find('[data-testid="error-message"]').text()).toBe(
+      "Failed to load car types."
+    );
+    expect(wrapper.find('[data-testid="car-types"]').text()).toBe("[]");
+  });
+
   it("renders both components", () => {
-    const wrapper = mount(App);
+    const wrapper = mount(BidCalculator);
 
     expect(wrapper.find('[data-testid="bid-calculator-form"]').exists()).toBe(
       true
@@ -95,7 +106,7 @@ describe("App.vue", () => {
   });
 
   it("initializes with default form data", () => {
-    const wrapper = mount(App);
+    const wrapper = mount(BidCalculator);
 
     const formDataElement = wrapper.find('[data-testid="form-data"]');
     const formData = JSON.parse(formDataElement.text());
@@ -107,7 +118,7 @@ describe("App.vue", () => {
   });
 
   it("initializes with correct default states", () => {
-    const wrapper = mount(App);
+    const wrapper = mount(BidCalculator);
 
     expect(wrapper.find('[data-testid="is-submitting"]').text()).toBe("false");
     expect(wrapper.find('[data-testid="errors"]').text()).toBe("{}");
@@ -128,7 +139,7 @@ describe("App.vue", () => {
 
       mockBidService.calculate.mockResolvedValue(mockResponse);
 
-      const wrapper = mount(App);
+      const wrapper = mount(BidCalculator);
 
       await wrapper.find('[data-testid="submit-btn"]').trigger("click");
       await nextTick();
@@ -141,7 +152,7 @@ describe("App.vue", () => {
 
     describe("Form Updates", () => {
       it("updates basePrice in formData object when update event is emitted from the base price input", async () => {
-        const wrapper = mount(App);
+        const wrapper = mount(BidCalculator);
 
         await wrapper.find('[data-testid="update-base-price-btn"]').trigger("click");
         await nextTick();
@@ -166,7 +177,7 @@ describe("App.vue", () => {
       });
 
       it("clears specific field errors when updating form data", async () => {
-        const wrapper = mount(App);
+        const wrapper = mount(BidCalculator);
 
         // Set some initial errors
         const vm = wrapper.vm as any;
@@ -187,7 +198,7 @@ describe("App.vue", () => {
       });
 
       it("resets calculation results when form data changes", async () => {
-        const wrapper = mount(App);
+        const wrapper = mount(BidCalculator);
         const vm = wrapper.vm as any;
 
         // Set some initial results
@@ -213,7 +224,7 @@ describe("App.vue", () => {
 
     describe("Form Validation", () => {
       it("prevents submission with invalid base price (0)", async () => {
-        const wrapper = mount(App);
+        const wrapper = mount(BidCalculator);
         const vm = wrapper.vm as any;
 
         // Set invalid base price
@@ -233,7 +244,7 @@ describe("App.vue", () => {
       });
 
       it("prevents submission with invalid base price (negative)", async () => {
-        const wrapper = mount(App);
+        const wrapper = mount(BidCalculator);
         const vm = wrapper.vm as any;
 
         vm.formData.basePrice = -100;
@@ -309,7 +320,7 @@ describe("App.vue", () => {
 
         mockBidService.calculate.mockRejectedValue(serverErrors);
 
-        const wrapper = mount(App);
+        const wrapper = mount(BidCalculator);
 
         await wrapper.find('[data-testid="submit-btn"]').trigger("click");
         await nextTick();
@@ -331,7 +342,7 @@ describe("App.vue", () => {
         const unexpectedError = new Error("Network error");
         mockBidService.calculate.mockRejectedValue(unexpectedError);
 
-        const wrapper = mount(App);
+        const wrapper = mount(BidCalculator);
 
         await wrapper.find('[data-testid="submit-btn"]').trigger("click");
         await nextTick();
@@ -346,7 +357,10 @@ describe("App.vue", () => {
 
 describe("Props Passing", () => {
   it("passes correct props to BidCalculatorForm component", () => {
-    const wrapper = mount(App);
+    const wrapper = mount(BidCalculator);
+    const carTypes = JSON.parse(
+      wrapper.find('[data-testid="car-types"]').text()
+    );
     const formData = JSON.parse(
       wrapper.find('[data-testid="form-data"]').text()
     );
@@ -354,6 +368,7 @@ describe("Props Passing", () => {
     expect(
       wrapper.findComponent({ name: "BidCalculatorForm" }).props()
     ).toEqual({
+      carTypes: carTypes,
       formData: formData,
       isSubmitting: false,
       errors: {},
@@ -362,7 +377,7 @@ describe("Props Passing", () => {
   });
 
   it("passes correct props to BidCalculationResult component", async () => {
-    const wrapper = mount(App);
+    const wrapper = mount(BidCalculator);
     const vm = wrapper.vm as any;
 
     const mockResults: BidFormResponse = {
