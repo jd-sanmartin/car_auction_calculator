@@ -1,6 +1,7 @@
-import type { CarType } from "../types/bids";
+import { CarTypeEnum } from "../types/bids";
 
-export const FeePercentagesByCarType: Record<CarType, Record<string, number>> = {
+// I think there can be better approaches to handle this, however, this is a demo which is more focused on backend, so I will keep it this way
+export const FeePercentagesByCarType: Record<keyof typeof CarTypeEnum, Record<string, number>> = {
     Common: {
         basicBuyerFeePercentage: 10,
         basicBuyerFeeMin: 10,

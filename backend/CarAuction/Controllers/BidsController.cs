@@ -18,5 +18,12 @@ namespace CarAuction.Controllers
 
 			return Ok(bidOut);
 		}
+
+		[HttpGet("car-types")]
+		public IActionResult GetCarTypes()
+		{
+			var carTypes = _bidService.GetCarTypes();
+			return Ok(carTypes);
+		}
 	}
 }

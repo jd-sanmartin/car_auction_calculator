@@ -2,6 +2,7 @@ import axios, { AxiosError } from "axios";
 import type {
   BidFormData,
   BidFormResponse,
+  CarType,
   FormErrors,
 } from "../types/bids";
 
@@ -15,6 +16,11 @@ class BidService {
         "Content-Type": "application/json",
       },
     });
+  }
+
+  async getCarTypes(): Promise<CarType[]> {
+      const response = await this.axiosInstance.get<CarType[]>("/car-types");
+      return response.data;
   }
 
   /**

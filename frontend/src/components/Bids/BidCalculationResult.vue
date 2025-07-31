@@ -3,7 +3,7 @@
         <h3>Calculation Results</h3>
         <div v-if="isLoading" class="loading"> <p>Loading...</p></div>
 
-        <div v-else-if="results" class="results-content">
+        <div v-else-if="results && feePercentages" class="results-content">
             <div class="cost-breakdown">
                 <div class="cost-item">
                     <label>Base Price:</label>
@@ -11,12 +11,12 @@
                 </div>
 
                 <div class="cost-item">
-                    <label>Basic Buyer Fee: <span class="percentage">({{ FeePercentagesByCarType[carType].basicBuyerFeePercentage }}%)*</span></label>
+                    <label>Basic Buyer Fee: <span class="percentage">({{ feePercentages.basicBuyerFeePercentage }}%)*</span></label>
                     <span class="amount">${{ results.basicBuyerFee }}</span>
                 </div>
 
                 <div class="cost-item">
-                    <label>Special Seller Fee: <span class="percentage">({{ FeePercentagesByCarType[carType].sellerSpecialFeePercentage }}%)</span></label>
+                    <label>Special Seller Fee: <span class="percentage">({{ feePercentages.sellerSpecialFeePercentage }}%)</span></label>
                     <span class="amount">${{ results.sellerSpecialFee }}</span>
                 </div>
 
@@ -37,7 +37,7 @@
             </div>
 
             <div class="notes">
-                <p>* Basic Buyer Fee is calculated over the base price, however, the minimum and maximum values for {{ carType }} vehicles are ${{ FeePercentagesByCarType[carType].basicBuyerFeeMin }} and ${{ FeePercentagesByCarType[carType].basicBuyerFeeMax }}, respectively.</p>
+                <p>* Basic Buyer Fee is calculated over the base price, however, the minimum and maximum values for {{ carTypeName }} vehicles are ${{ feePercentages.basicBuyerFeeMin }} and ${{ feePercentages.basicBuyerFeeMax }}, respectively.</p>
                 <p>** Association Fee is based on the price of the vehicle</p>
             </div>
         </div>
@@ -45,16 +45,21 @@
 </template>
 
 <script setup lang="ts">
-import type { BidFormResponse, CarType } from '../../types/bids';
+import { computed } from 'vue';
+import { type BidFormResponse, type CarTypeName } from '../../types/bids';
 import { FeePercentagesByCarType } from '../../constants/bidConstants';
 
 interface Props {
-    carType: CarType;
+    carTypeName?: CarTypeName;
     results: BidFormResponse | null;
     isLoading: boolean;
 }
 
-defineProps<Props>();
+const { carTypeName } = defineProps<Props>();
+
+const feePercentages = computed(() => {
+    return carTypeName ? FeePercentagesByCarType[carTypeName] : null;
+});
 </script>
 
 <style scoped lang="scss">

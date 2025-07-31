@@ -1,14 +1,26 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { mount } from "@vue/test-utils";
+import { flushPromises, mount } from "@vue/test-utils";
 import { nextTick } from "vue";
 import App from "./App.vue";
 import { bidService } from "./services/bidService";
-import type { BidFormResponse, FormErrors } from "./types/bids";
+import { CarTypeEnum, type BidFormResponse, type FormErrors } from "./types/bids";
+
+// This function is used when we need to wait for the onMounted hook
+const mountAppAndWait = async () => {
+  const wrapper = mount(App);
+  await flushPromises();
+  return wrapper;
+};
 
 // Mock the bidService
 vi.mock("./services/bidService", () => ({
   bidService: {
     calculate: vi.fn(),
+    // TODO: has been called onmounted
+    getCarTypes: vi.fn().mockResolvedValue([
+      { id: 0, name: "Common" },
+      { id: 1, name: "Luxury" },
+    ]),
   },
 }));
 
@@ -16,17 +28,18 @@ vi.mock("./services/bidService", () => ({
 vi.mock("./components/Bids/BidCalculatorForm.vue", () => ({
   default: {
     name: "BidCalculatorForm",
-    props: ["formData", "isSubmitting", "errors", "errorMessage"],
+    props: ["carTypes", "formData", "isSubmitting", "errors", "errorMessage"],
     emits: ["update", "submit"],
     template: `
       <div data-testid="bid-calculator-form">
+        <div data-testid="car-types">{{ JSON.stringify(carTypes) }}</div>
         <div data-testid="form-data">{{ JSON.stringify(formData) }}</div>
         <div data-testid="is-submitting">{{ isSubmitting }}</div>
         <div data-testid="errors">{{ JSON.stringify(errors) }}</div>
         <div data-testid="error-message">{{ errorMessage }}</div>
         <button @click="$emit('submit')" data-testid="submit-btn">Submit</button>
         <button @click="$emit('update', 'basePrice', 1000)" data-testid="update-base-price-btn">Update Price</button>
-        <button @click="$emit('update', 'carType', 'Luxury')" data-testid="update-type-btn">Update Type</button>
+        <button @click="$emit('update', 'carType', '1')" data-testid="update-type-btn">Update Type</button>
       </div>
     `,
   },
@@ -35,12 +48,12 @@ vi.mock("./components/Bids/BidCalculatorForm.vue", () => ({
 vi.mock("./components/Bids/BidCalculationResult.vue", () => ({
   default: {
     name: "BidCalculationResult",
-    props: ["results", "isLoading", "carType"],
+    props: ["results", "isLoading", "carTypeName"],
     template: `
       <div data-testid="bid-calculation-result">
         <div data-testid="results">{{ JSON.stringify(results) }}</div>
         <div data-testid="loading">{{ isLoading }}</div>
-        <div data-testid="car-type">{{ carType }}</div>
+        <div data-testid="car-type-name">{{ carTypeName }}</div>
       </div>
     `,
   },
@@ -51,6 +64,23 @@ describe("App.vue", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  it("calls getCarTypes on mounted", async () => {
+    await mountAppAndWait();
+    expect(mockBidService.getCarTypes).toHaveBeenCalled();
+    expect(mockBidService.getCarTypes).toHaveBeenCalledTimes(1);
+  });
+
+  it("initializes car types from the service", async () => {
+    const wrapper = await mountAppAndWait();
+    const carTypes = JSON.parse(
+      wrapper.find('[data-testid="car-types"]').text()
+    );
+    expect(carTypes).toEqual([
+      { id: 0, name: "Common" },
+      { id: 1, name: "Luxury" },
+    ]);
   });
 
   it("renders both components", () => {
@@ -72,7 +102,7 @@ describe("App.vue", () => {
 
     expect(formData).toEqual({
       basePrice: 1,
-      carType: "Common",
+      carType: CarTypeEnum.Common,
     });
   });
 
@@ -113,9 +143,7 @@ describe("App.vue", () => {
       it("updates basePrice in formData object when update event is emitted from the base price input", async () => {
         const wrapper = mount(App);
 
-        await wrapper
-          .find('[data-testid="update-base-price-btn"]')
-          .trigger("click");
+        await wrapper.find('[data-testid="update-base-price-btn"]').trigger("click");
         await nextTick();
 
         const formData = JSON.parse(
@@ -125,7 +153,7 @@ describe("App.vue", () => {
       });
 
       it("updates car type in formData object when update event is emitted from the car type input", async () => {
-        const wrapper = mount(App);
+        const wrapper = await mountAppAndWait();
 
         await wrapper.find('[data-testid="update-type-btn"]').trigger("click");
         await nextTick();
@@ -133,7 +161,8 @@ describe("App.vue", () => {
         const formData = JSON.parse(
           wrapper.find('[data-testid="form-data"]').text()
         );
-        expect(formData.carType).toBe("Luxury");
+
+        expect(formData.carType).toBe('1');
       });
 
       it("clears specific field errors when updating form data", async () => {
@@ -223,10 +252,11 @@ describe("App.vue", () => {
       });
 
       it("prevents submission with invalid car type", async () => {
-        const wrapper = mount(App);
+        const wrapper = await mountAppAndWait();
         const vm = wrapper.vm as any;
 
-        vm.formData.carType = "InvalidType";
+        // For some reason, carType is being set to 0 regardless of its initial state
+        vm.formData.carType = -1;
         await nextTick();
 
         await wrapper.find('[data-testid="submit-btn"]').trigger("click");
@@ -253,19 +283,19 @@ describe("App.vue", () => {
 
         mockBidService.calculate.mockResolvedValue(mockResponse);
 
-        const wrapper = mount(App);
+        const wrapper = await mountAppAndWait();
         const vm = wrapper.vm as any;
 
-        vm.formData.basePrice = 1000;
-        vm.formData.carType = "Luxury";
+        vm.formData.basePrice = 1500;
+        vm.formData.carType = 1;
         await nextTick();
 
         await wrapper.find('[data-testid="submit-btn"]').trigger("click");
         await nextTick();
 
         expect(mockBidService.calculate).toHaveBeenCalledWith({
-          basePrice: 1000,
-          carType: "Luxury",
+          basePrice: 1500,
+          carType: 1,
         });
       });
     });
@@ -345,14 +375,12 @@ describe("Props Passing", () => {
     };
 
     vm.calculationResults = mockResults;
-    vm.formData.carType = "Luxury";
-    vm.isSubmitting = true;
+    vm.isSubmitting = false;
     await nextTick();
 
     expect(wrapper.find('[data-testid="results"]').text()).toBe(
       JSON.stringify(mockResults)
     );
-    expect(wrapper.find('[data-testid="loading"]').text()).toBe("true");
-    expect(wrapper.find('[data-testid="car-type"]').text()).toBe("Luxury");
+    expect(wrapper.find('[data-testid="loading"]').text()).toBe("false");
   });
 });

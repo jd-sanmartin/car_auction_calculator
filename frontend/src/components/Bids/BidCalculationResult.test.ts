@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
 import BidCalculationResult from './BidCalculationResult.vue'
-import type { BidFormResponse, CarType } from '../../types/bids'
+import { type BidFormResponse, type CarTypeName } from '../../types/bids'
 
 describe('BidCalculationResult.vue', () => {
   const mockResults: BidFormResponse = {
@@ -14,7 +14,7 @@ describe('BidCalculationResult.vue', () => {
   }
 
   const defaultProps = {
-    carType: 'Common' as CarType,
+    carTypeName: 'Common' as CarTypeName,
     results: mockResults,
     isLoading: false
   }
@@ -68,7 +68,7 @@ describe('BidCalculationResult.vue', () => {
     })
 
     it('renders notes section correctly for Common car type', () => {
-      const wrapper = createWrapper({ carType: 'Common' })
+      const wrapper = createWrapper({ carTypeName: 'Common' })
       const notes = wrapper.find('.notes')
       const notesItems = notes.findAll('p')
       
@@ -79,7 +79,7 @@ describe('BidCalculationResult.vue', () => {
     })
 
     it('renders notes section correctly for Luxury car type', () => {
-      const wrapper = createWrapper({ carType: 'Luxury' })
+      const wrapper = createWrapper({ carTypeName: 'Luxury' })
       const notes = wrapper.find('.notes')
       const notesItems = notes.findAll('p')
       
@@ -136,7 +136,7 @@ describe('BidCalculationResult.vue', () => {
 
   describe('Variations in notes for each car type', () => {
     it('displays correct fee percentages for Common car type', () => {
-      const wrapper = createWrapper({ carType: 'Common' })
+      const wrapper = createWrapper({ carTypeName: 'Common' })
       
       const basicBuyerFeeLabel = wrapper.findAll('.cost-item')[1].find('label')
       const sellerSpecialFeeLabel = wrapper.findAll('.cost-item')[2].find('label')
@@ -146,7 +146,7 @@ describe('BidCalculationResult.vue', () => {
     })
 
     it('displays correct fee percentages for Luxury car type', () => {
-      const wrapper = createWrapper({ carType: 'Luxury' })
+      const wrapper = createWrapper({ carTypeName: 'Luxury' })
       
       const basicBuyerFeeLabel = wrapper.findAll('.cost-item')[1].find('label')
       const sellerSpecialFeeLabel = wrapper.findAll('.cost-item')[2].find('label')
@@ -156,14 +156,14 @@ describe('BidCalculationResult.vue', () => {
     })
 
     it('displays correct min/max values for Common car type in notes', () => {
-      const wrapper = createWrapper({ carType: 'Common' })
+      const wrapper = createWrapper({ carTypeNAme: 'Common' })
       const notes = wrapper.find('.notes p')
       
       expect(notes.text()).toContain('$10 and $50')
     })
 
     it('displays correct min/max values for Luxury car type in notes', () => {
-      const wrapper = createWrapper({ carType: 'Luxury' })
+      const wrapper = createWrapper({ carTypeName: 'Luxury' })
       const notes = wrapper.find('.notes p')
       
       expect(notes.text()).toContain('$25 and $200')

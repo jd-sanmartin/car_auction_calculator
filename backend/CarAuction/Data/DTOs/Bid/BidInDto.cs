@@ -6,7 +6,7 @@ namespace CarAuction.Data.Dtos.Bid
   public class BidInDto
   {
     [Required(ErrorMessage = "BasePrice is required.")]
-    [Range(typeof(decimal), "1", "999999999.99", ErrorMessage = "BasePrice must be greater than zero.")]
+    [Range(typeof(decimal), "1", "999999999.99", ErrorMessage = "BasePrice is outside a valid range.")]
     public decimal BasePrice { get; set; }
 
     [Required(ErrorMessage = "CarType is required.")]

@@ -2,7 +2,8 @@
 <template>
   <div class="app-container">
     <div class="container">
-      <BidCalculatorForm 
+      <BidCalculatorForm
+        :carTypes="carTypes"
         :formData="formData"
         :isSubmitting="isSubmitting"
         :errors="errors"
@@ -12,22 +13,24 @@
       />
     </div>
     <div class="container">
-      <BidCalculationResult :results="calculationResults" :isLoading="isSubmitting" :car-type="formData.carType" />
+      <BidCalculationResult :results="calculationResults" :isLoading="isSubmitting" :carTypeName="carTypes[formData.carType]?.name" />
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { reactive, ref, onMounted } from 'vue';
+import { bidService } from './services/bidService';
 
 import BidCalculationResult from './components/Bids/BidCalculationResult.vue';
 import BidCalculatorForm from './components/Bids/BidCalculatorForm.vue';
 
-import { type BidFormData, type FormErrors, type BidFormResponse, isFormError } from './types/bids';
-import { bidService } from './services/bidService';
+import { type CarType, type BidFormData, type FormErrors, type BidFormResponse, isFormError, CarTypeEnum, isValidCarTypeId } from './types/bids';
+
+const carTypes = ref<CarType[]>([]);
 
 const formData = reactive<BidFormData>({
   basePrice: 1,
-  carType: 'Common',
+  carType: carTypes.value[0]?.id || CarTypeEnum.Common,
 });
 
 const isSubmitting = ref(false);
@@ -52,8 +55,7 @@ const validateForm = (): boolean => {
     newErrors.basePrice = ['Base price is required and must be at least $1'];
   }
 
-  // TODO: The list of valid car types obtained from the server would be used in this validation, however, for simplicity I will use these hardcoded values
-  if (!formData.carType || !['Common', 'Luxury'].includes(formData.carType)) {
+  if (!isValidCarTypeId(formData.carType)) {
     newErrors.carType = ['Car type is required and must be a valid type'];
   }
 
@@ -90,6 +92,16 @@ const handleSubmit = async (): Promise<void> => {
     isSubmitting.value = false;
   }
 };
+
+onMounted(async () => {
+  try {
+    carTypes.value = await bidService.getCarTypes();
+    formData.carType = carTypes.value[0].id;
+  } catch (e) {
+    console.error('Failed to load car types:', e);
+    errorMessage.value = 'Failed to load car types.';
+  }
+});
 </script>
 <style lang="scss">
 // TODO: Move common to external SCSS file

@@ -2,7 +2,6 @@
   <div class="car-auction-form">
     <h2>Car Auction Calculator</h2>
 
-    <!-- TODO: handle errors in inputs from the backend -->
     <form @submit.prevent="handleSubmit" class="form">
       <div class="form-input">
         <!-- Base price -->
@@ -16,12 +15,14 @@
       <!-- Car Type -->
       <div class="form-input">
         <label for="carType">Car Type *</label>
-        <select id="carType" :value="formData.carType"
+        <select
+          id="carType"
+          :value="formData.carType"
           @change="updateField('carType', ($event.target as HTMLSelectElement).value)"
-          :class="{ error: errors?.carType }" required>
-          <!-- TODO: Ideally, we would get these values from the backend -->
-          <option value="Common">Common</option>
-          <option value="Luxury">Luxury</option>
+          :class="{ error: errors?.carType }"
+          required
+        >
+          <option v-for="carType in carTypes" :key="`car-type-${carType.id}`" :value="carType.id">{{ carType.name }}</option>
         </select>
         <span v-if="errors?.carType" class="error-message">{{ errors.carType[0] }}</span>
       </div>
@@ -40,9 +41,10 @@
   </div>
 </template>
 <script setup lang="ts">
-import type { BidFormData, FormErrors } from '../../types/bids';
+import type { BidFormData, CarType, FormErrors } from '../../types/bids';
 
 interface Props {
+  carTypes: CarType[];
   formData: BidFormData;
   isSubmitting: boolean;
   errors?: Partial<FormErrors>;
@@ -56,7 +58,10 @@ const emit = defineEmits<{
   'submit': [];
 }>();
 
-const updateField = (field: keyof BidFormData, value: number | string) => { emit('update', field, value); };
+const updateField = (field: keyof BidFormData, value: number | string) => {
+  if (field === 'carType') emit('update', field, Number(value));
+  else emit('update', field, value);
+};
 const handleSubmit = () => { emit('submit'); };
 </script>
 

@@ -1,9 +1,20 @@
-// I made this type in order to avoid the use of magic strings. I could also use a constant object I could use as a kind of enum
-export type CarType = 'Common' | 'Luxury';
+export const CarTypeEnum = {
+  Common: 0,
+  Luxury: 1,
+} as const;
+
+export type CarTypeId = (typeof CarTypeEnum)[keyof typeof CarTypeEnum];
+export type CarTypeName = keyof typeof CarTypeEnum;
+
+// Response from server on GET /car-types
+export type CarType = {
+  id: CarTypeId;
+  name: CarTypeName;
+}
 
 export interface BidFormData {
   basePrice: number;
-  carType: CarType;
+  carType: CarTypeId;
 }
 
 // Type of the response we get from the server on POST /calculate
@@ -23,3 +34,6 @@ export function isFormError(errors: any): errors is FormErrors {
   return errors && (errors.basePrice || errors.carType);
 }
 
+export function isValidCarTypeId(carTypeId: any): carTypeId is CarTypeId {
+  return Object.values(CarTypeEnum).includes(carTypeId);
+}
