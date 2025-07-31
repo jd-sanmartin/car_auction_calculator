@@ -2,6 +2,7 @@ using CarAuction.Data.Dtos;
 using CarAuction.Data.Dtos.Bid;
 using CarAuction.Data.Enums;
 using CarAuction.Services.Interfaces;
+using CarAuction.Services.Strategies;
 
 namespace CarAuction.Services
 {
@@ -9,34 +10,8 @@ namespace CarAuction.Services
 	{
 		public BidOutDto CalculateCost(BidInDto bidInDto)
 		{
-			decimal basePrice = bidInDto.BasePrice;
-
-			// TODO: Avoid using magic numbers and use constants instead in order to avoid calculating these values every time
-			// TODO: A Factory or Strategy could be used here to handle different car types
-			decimal basicBuyerFeeMinValue = bidInDto.CarType == CarType.Common ? 10 : 25;
-			decimal basicBuyerFeeMaxValue = bidInDto.CarType == CarType.Common ? 50 : 200;
-			decimal basicBuyerFee = Math.Clamp(basePrice * 0.1m, basicBuyerFeeMinValue, basicBuyerFeeMaxValue);
-
-			decimal sellerSpecialFee = basePrice * (bidInDto.CarType == CarType.Common ? 0.02m : 0.04m);
-
-			decimal associationFee = basePrice switch
-			{
-				>= 1 and <= 500 => 5,
-				> 500 and <= 1000 => 10,
-				> 1000 and <= 3000 => 15,
-				> 3000 => 20,
-				_ => 5 // TODO: What should the default value be?
-			};
-			decimal storageFee = 100;
-
-			return new BidOutDto
-			{
-				BasePrice = basePrice,
-				BasicBuyerFee = basicBuyerFee,
-				SellerSpecialFee = sellerSpecialFee,
-				AssociationFee = associationFee,
-				StorageFee = storageFee
-			};
+			var feeStrategy = CarTypeFeeStrategyFactory.GetStrategy(bidInDto.CarType);
+			return feeStrategy.CalculateFees(bidInDto);
 		}
 
 		public List<CarTypeDto> GetCarTypes()

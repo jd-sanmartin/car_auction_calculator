@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using CarAuction.Data.Dtos.Bid;
 using CarAuction.Data.Enums;
+using CarAuction.Data.Dtos;
 
 namespace CarAuction.IntegrationTests.Controllers
 {
@@ -22,6 +23,32 @@ namespace CarAuction.IntegrationTests.Controllers
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 DictionaryKeyPolicy = JsonNamingPolicy.CamelCase
             };
+        }
+
+        [Fact]
+        public async Task GetCarTypes_ReturnsAllCarTypes()
+        {
+            // Arrange
+            var expectedCarTypes = new List<CarTypeDto>
+            {
+                new() { Id = 0, Name = "Common" },
+                new() { Id = 1, Name = "Luxury" }
+            };
+
+            // Act
+            var response = await _client.GetAsync("/api/bids/car-types");
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var carTypes = JsonSerializer.Deserialize<List<CarTypeDto>>(responseContent, _jsonOptions);
+            Assert.NotNull(carTypes);
+            Assert.NotEmpty(carTypes);
+            Assert.Equal(expectedCarTypes.Count, carTypes.Count);
+            for (int i = 0; i < expectedCarTypes.Count; i++)
+            {
+                Assert.Equal(expectedCarTypes[i].Id, carTypes[i].Id);
+                Assert.Equal(expectedCarTypes[i].Name, carTypes[i].Name);
+            }
         }
 
         [Theory]

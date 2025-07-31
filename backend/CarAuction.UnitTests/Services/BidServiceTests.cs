@@ -1,6 +1,7 @@
 using CarAuction.Services;
 using CarAuction.Data.Dtos.Bid;
 using CarAuction.Data.Enums;
+using CarAuction.Data.Dtos;
 
 namespace CarAuction.UnitTests.Services
 {
@@ -11,6 +12,30 @@ namespace CarAuction.UnitTests.Services
         public BidServiceTests()
         {
             _bidService = new BidService();
+        }
+
+        [Fact]
+        public void GetCarTypes_ReturnsAllCarTypes()
+        {
+            // Arrange
+            var expectedCarTypes = new List<CarTypeDto>
+            {
+                new() { Id = 0, Name = "Common" },
+                new() { Id = 1, Name = "Luxury" }
+            };
+
+            // Act
+            var carTypes = _bidService.GetCarTypes();
+
+            // Assert
+            Assert.NotNull(carTypes);
+            Assert.NotEmpty(carTypes);
+            Assert.Equal(expectedCarTypes.Count, carTypes.Count);
+            for (int i = 0; i < expectedCarTypes.Count; i++)
+            {
+                Assert.Equal(expectedCarTypes[i].Id, carTypes[i].Id);
+                Assert.Equal(expectedCarTypes[i].Name, carTypes[i].Name);
+            }
         }
 
         [Theory]
@@ -42,6 +67,38 @@ namespace CarAuction.UnitTests.Services
             Assert.Equal(expectedAssociationFee, result.AssociationFee, 2);
             Assert.Equal(expectedStorageFee, result.StorageFee, 2);
             Assert.Equal(expectedTotalCost, result.TotalCost, 2);
+        }
+
+        [Fact]
+        public void CalculateCost_InvalidPrice_ThrowsArgumentException()
+        {
+            // Arrange
+            var bidInDto = new BidInDto
+            {
+                BasePrice = -100,
+                CarType = CarType.Common
+            };
+
+            // Act
+            //  Assert
+            var exception = Assert.Throws<ArgumentException>(() => _bidService.CalculateCost(bidInDto));
+            Assert.Equal("Invalid base price", exception.Message);
+        }
+
+        [Fact]
+        public void CalculateCost_InvalidCarType_ThrowsArgumentException()
+        {
+            // Arrange
+            var bidInDto = new BidInDto
+            {
+                BasePrice = 1000,
+                CarType = (CarType)999 // Invalid car type
+            };
+
+            // Act
+            // Assert
+            var exception = Assert.Throws<ArgumentException>(() => _bidService.CalculateCost(bidInDto));
+            Assert.Equal("Invalid car type", exception.Message);
         }
     }
 }
